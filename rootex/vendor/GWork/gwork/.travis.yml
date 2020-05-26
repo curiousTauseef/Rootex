@@ -1,0 +1,72 @@
+# Gwork Travis config
+
+# Life cycle: (https://docs.travis-ci.com/user/customizing-the-build/)
+#
+#   - OPTIONAL Install apt addons
+#   - OPTIONAL Install cache components
+#   - before_install
+#   - install
+#   - before_script
+#   - script
+#   - OPTIONAL before_cache (for cleaning up cache)
+#   - after_success or after_failure
+#   - OPTIONAL before_deploy
+#   - OPTIONAL deploy
+#   - OPTIONAL after_deploy
+#   - after_script
+
+
+# Use Ubuntu Trusty (14) for mostly up-to-date packages
+sudo: required
+dist: trusty
+language: cpp
+
+# Travis compilers are out of date if we want to use modern C++1y features. Need to
+# explicitly specify external packages required and versions in matrix.
+# Problems for earlier compilers include <codecvt> coverage on GCC.
+#
+# More info: http://genbattle.bitbucket.org/blog/2016/01/17/c++-travis-ci/
+# matrix example: https://github.com/ColinH/PEGTL/blob/master/.travis.yml
+#
+# currently issue for adding the Trusty LLVM ppa to Travis’ whitelist, previous, 12.04
+# issue: https://github.com/travis-ci/apt-source-whitelist/pull/205
+
+# Linux packages are got using apt on Travis.
+# See: https://docs.travis-ci.com/user/installing-dependencies/
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      env: FEATURES="-DWANT_REFLECTION=OFF"
+    - os: linux
+      compiler: gcc
+      env: FEATURES="-DWANT_REFLECTION=ON"
+      
+    - os: linux
+      compiler: clang
+      env: FEATURES="-DWANT_REFLECTION=OFF"
+    - os: linux
+      compiler: clang
+      env: FEATURES="-DWANT_REFLECTION=ON"
+
+    - os: osx               # Xcode (previous)
+      osx_image: xcode8.3
+      env: FEATURES="-DWANT_REFLECTION=OFF"
+    - os: osx
+      osx_image: xcode8.3
+      env: FEATURES="-DWANT_REFLECTION=ON"
+
+    - os: osx               # Xcode (latest)
+      osx_image: xcode9.2
+      env: FEATURES="-DWANT_REFLECTION=OFF"
+    - os: osx
+      osx_image: xcode9.2
+      env: FEATURES="-DWANT_REFLECTION=ON"
+
+script: ./ci/travis/build.sh
+    
+notifications:
+  email:
+    on_failure: change
+    on_success: change

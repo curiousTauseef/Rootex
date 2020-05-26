@@ -90,6 +90,10 @@ target_link_libraries(Rootex PUBLIC
     ImGuizmo
     Gainput
     Bullet3D
+    Gwork
+    GworkUtil
+    GWorkDirectX11
+
     Shell32.lib
     d3d11.lib
     xinput.lib
